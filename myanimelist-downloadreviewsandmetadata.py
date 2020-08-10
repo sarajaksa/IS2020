@@ -7,12 +7,13 @@ import sqlite3
 import logging
 import time
 
-review_folder = "data"
-metadata_folder = "metadata"
-database_file_name = "anime_list.sqlite3"
+project_folder = "/root/myanimelist-review-download-script"
+review_folder = project_folder + "/data"
+metadata_folder = project_folder + "/metadata"
+database_file_name = project_folder + "/anime_list.sqlite3"
 
 logging.basicConfig(
-    filename="anime.log", level=logging.DEBUG, format="%(asctime)s %(message)s"
+    filename=project_folder + "anime.log", level=logging.DEBUG, format="%(asctime)s %(message)s"
 )
 
 default_list_elements = [
