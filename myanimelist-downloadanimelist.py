@@ -72,7 +72,7 @@ def get_all_animes_from_site(data_soup):
         if "https://myanimelist.net/anime/" in link
     ]
     return (
-        "INSERT INTO anime (anime) VALUES "
+        "INSERT OR IGNORE INTO anime (anime) VALUES "
         + ",".join(['("' + a + '")' for a in anime_keys])
         + ";"
     )
@@ -89,7 +89,7 @@ for url in anime_list_urls:
     number_of_entries = number_of_sites * 50
     run_statment_in_database(sql_database, get_all_animes_from_site(data_soup))
     i = 50
-    if i < number_of_entries:
+    while i < number_of_entries:
         response_body = download_a_site(url + "&show=" + str(i))
         data_soup = bs4.BeautifulSoup(response_body, features="lxml")
         run_statment_in_database(sql_database, get_all_animes_from_site(data_soup))
