@@ -96,17 +96,10 @@ def save_json_to_file(json_to_save, folder):
         json.dump(json_to_save, f)
 
 
-def get_next_page(site_soup):
-    navigation_element = site_soup.find_all("div", class_="ml4")
-    if not len(navigation_element):
-        return False
-    links_elements = navigation_element[0].find_all("a")
-    next_link_list = [
-        a["href"] for a in links_elements if "More Reviews" in a.get_text()
-    ]
-    if not len(next_link_list):
-        return None
-    return next_link_list[0].split("?")[1].split("=")[1]
+def get_next_page(number_of_reviews_on_site, current_page_index):
+    if number_of_reviews_on_site == 20:
+        return str(int(current_page_index) + 1)
+    return False
 
 
 def process_a_website_of_reviews(series, next_page_index, review_folder):
@@ -115,7 +108,7 @@ def process_a_website_of_reviews(series, next_page_index, review_folder):
     reviews = data_soup.find_all("div", class_="borderDark")
     processed_reviews = [get_review_info(review, series) for review in reviews]
     [save_json_to_file(review_info, review_folder) for review_info in processed_reviews]
-    next_page_index = get_next_page(data_soup)
+    next_page_index = get_next_page(len(processed_reviews), next_page_index)
     return next_page_index
 
 
@@ -139,8 +132,10 @@ def download_a_website_of_reviews(series, page_index):
 # this is the main function for processing all the reviews of the series
 def process_the_reviews_for_series(series, review_folder):
     next_page_index = process_a_website_of_reviews(series, "1", review_folder)
-    if next_page_index:
-        process_a_website_of_reviews(series, next_page_index, review_folder)
+    while next_page_index:
+        next_page_index = process_a_website_of_reviews(
+            series, next_page_index, review_folder
+        )
     return True
 
 
